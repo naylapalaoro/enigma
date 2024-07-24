@@ -73,7 +73,7 @@
                     <div class="col-12 col-md-6">
                         <div class="mb-2">
                             <label for="mensajeProcesado" class="form-label">Mensajes procesados</label>
-                            <textarea class="form-control" id="mensajeProcesado" name="mensajeProcesado" rows="6">....Aqui se podra leer el mensaje ya procesado....</textarea>
+                            <textarea class="form-control justify-content-center align-items-center" id="mensajeProcesado" name="mensajeProcesado" rows="6">....Aqui se podra leer el mensaje ya procesado....</textarea>
                         </div>
                         <div class="btn-group" role="group" aria-label="Default button group">
                             <button type="submit" id="guardar" class="btn btn-success">Guardar</button>
@@ -82,23 +82,29 @@
                 </form>
         </section>
         <section class="row justify-content-center text-center p-3">
-        <div>
-            <h3 class=""style="margin: 15px;">Mensajes guardados</h3>
-        </div>
-        <div>
-            <table class="table table-success table-striped" id =mensajesPrevios>
-                <tbody>
-                    <tr>
-                        <td>Clave</td>
-                        <td>Cifrado</td>
-                        <td>Mensaje</td>
-                        <td>Fecha</td>
-                        <td><i class="bi bi-patch-question-fill"></i></td>
-                    </tr>
-                </tbody>            
-            </table>
-         </div>
+            <div>
+                <h3 class=""style="margin: 10px;">Mensajes guardados</h3>
+            </div>
+            <div>
+                <table class="p-3 mb-2 table table-success table-striped " id =mensajesPrevios>
+                    <tbody>
+                        <tr>
+                            <td>Clave</td>
+                            <td>Cifrado</td>
+                            <td>Mensaje</td>
+                            <td>Fecha</td>
+                            <td><i class="bi bi-patch-question-fill"></i></td>
+                        </tr>
+                    </tbody>            
+                </table>
+            </div>
         </section>
+        
+        <!--<section>
+            <div class="">
+                <h3 class=""style="margin: 10px;">Buscar mensajes mas antiguos</h3>
+            </div>
+        </section>-->
 
     <!--footer-->
         <div class="row" id="Contactanos">
