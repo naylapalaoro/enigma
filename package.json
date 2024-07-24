@@ -4,7 +4,7 @@
   "description": "",
   "main": "database.js",
   "scripts": {
-    "start": "node C:/Users/Nayla/Desktop/enigma/src/database.js",
+    "start": "node src/database.js",
     "dev": "nodemon C:/Users/Nayla/Desktop/enigma/src/database.js"
   },
   "keywords": [],
