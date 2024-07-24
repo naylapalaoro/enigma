@@ -58,8 +58,14 @@ app.get("/errorLogeo", (req, res) => {
         console.error(e);
     }
 });
-
-// Métodos para el modelo de usuarios
+app.get("/mensajes", (req, res) => {
+    try{
+        res.sendFile(path.resolve(__dirname, '../views/mensajes.html'));
+    }catch (e) {
+        console.error(e);
+    }
+});
+// Metodos para guardar usuarios
 app.post('/', async (req, res) => {
     console.log('Datos recibidos:', req.body);
 
