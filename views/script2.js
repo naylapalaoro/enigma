@@ -141,8 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const fecha = new Date();
                 const fechaFormateada = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 
-                const botonesBDBorrar = `<button type="button" class="btn btn-success">
+                const botonesBDBorrar = `<button type="button" class="btn btn-danger m-1">
                                             <i class="bi bi-trash3-fill" style="color:black"></i>
+                                        </button>`;
+                const botonesCopiar = `<button type="button" class="btn btn-primary m-1">
+                                        <i class="bi bi-copy"></i>
                                         </button>`;
 
                 let fila = tabla.insertRow();
@@ -156,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 celda2.innerHTML = tipoCifrado;
                 celda3.innerHTML = mensaje;
                 celda4.innerHTML = fechaFormateada;
-                celda5.innerHTML = botonesBDBorrar;
+                celda5.innerHTML = botonesBDBorrar + botonesCopiar;
 
                 borrarCampos();
             } else {
@@ -185,17 +188,40 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error al borrar el mensaje:', error);
         }
     };
+    const copiarMensaje = (button) => {
+        const fila = button.closest('tr');
+        const clave = fila.cells[0].innerText;
+        const tipoCifrado = fila.cells[1].innerText;
+        const mensaje = fila.cells[2].innerText;
+        const texto = `${clave}\n${tipoCifrado}\n${mensaje}`;
+    
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    
+        alert('Mensaje copiado al portapapeles');
+    };
 
     document.getElementById('guardar').addEventListener('click', guardarMensaje);
 
     document.getElementById('mensajesPrevios').addEventListener('click', (event) => {
-        if (event.target.closest('.btn')) {
+        if (event.target.closest('.btn-danger')) {
             const fila = event.target.closest('tr');
             const clave = fila.cells[0].textContent;
             const mensaje = fila.cells[2].textContent;
             borrarMensaje(clave, mensaje, fila);
         }
     });
+
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('.btn-primary')) {
+            copiarMensaje(event.target.closest('.btn-primary'));
+        }
+    });
+    
 
     cifrarBoton.addEventListener("click", cifrarMensaje);
     descifrarBoton.addEventListener("click", descifrarMensaje);

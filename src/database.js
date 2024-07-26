@@ -10,7 +10,7 @@ const Usuario = require('./models/model.user');
 const Mensaje = require('./models/model.mensajes');
 
 const app = express();
-const puerto = 3000;
+const puerto = process.env.PORT || 3000;
 
 // Transformar el texto en JSON
 app.use(bodyParser.json());
@@ -65,6 +65,13 @@ app.get("/mensajes", (req, res) => {
         console.error(e);
     }
 });
+app.get("/mailExistente", (req, res) => {
+    try{
+        res.sendFile(path.resolve(__dirname, '../views/mailExistente.html'));
+    }catch (e) {
+        console.log(e);
+    }
+});
 // Metodos para guardar usuarios
 app.post('/', async (req, res) => {
     console.log('Datos recibidos:', req.body);
@@ -72,18 +79,25 @@ app.post('/', async (req, res) => {
     const { nombre, apellido, email, contraseña } = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(contraseña, 10);
-        const newUsuario = new Usuario({
-            nombre,
-            apellido,
-            email,
-            contraseña: hashedPassword
-        });
+            const usuarioLogeado = await Usuario.findOne({ email });
+        
+        if(!usuarioLogeado){
+            const hashedPassword = await bcrypt.hash(contraseña, 10);
+            const newUsuario = new Usuario({
+                nombre,
+                apellido,
+                email,
+                contraseña: hashedPassword
+            });
 
-        const savedUsuario = await newUsuario.save();
-        console.log('Usuario guardado:', savedUsuario);
-        res.redirect('/home');
-    } catch (err) {
+            const savedUsuario = await newUsuario.save();
+            console.log('Usuario guardado:', savedUsuario);
+            res.redirect('/home');
+        } else{
+            console.log('El mail de usuario ya existe')
+            res.redirect('/mailExistente');
+        }
+    }catch (err) {
         console.error('Error al guardar el usuario:', err);
         res.status(500).send('Error al guardar el usuario');
     }
@@ -148,6 +162,27 @@ app.delete('/home', async (req, res) => {
         console.error('Error al eliminar el mensaje:', err);
         res.status(500).json({ error: 'Error al eliminar el mensaje' });
     }
+});
+
+//metodo para visualizar mensajes
+app.get('/mensajes', async (req, res) => {
+    const claveCifrado = req.body;
+
+    try {
+        const mensajesPrevios = await Mensaje.find(claveCifrado);
+        
+        if(!mensajesPrevios){
+            res.status(404).json({ message: 'No se encuentran mensajes cifrados con esa clave' });
+        }
+
+        console.log(`Mensajes encontrados con la clave "${claveCifrado}"`);
+        res.status(200).json({ message: 'Mensajes encontrados con esa clave:' });
+
+    }catch (err) {
+        console.error('Error al buscar mensajes con esa clave', err);
+        res.status(500).json({ error: 'Error al buscar mensajes con esa clave' });
+    }
+    
 });
 
 // Escuchar en el puerto 3000
