@@ -52,11 +52,11 @@
                     </div>
                     <div class="mb-2">
                         <label for="mensajeSinProcesar" class="form-label">Ingresa tu mensaje</label>
-                        <textarea class="form-control" style="user-select: all" name="mensajeInicial" id="mensajeSinProcesar" rows="3" required>Ingresa aqui el texto que deseas cifrar o descifrar</textarea>
+                        <textarea class="form-control" style="user-select: all" name="mensajeInicial" id="mensajeSinProcesar" rows="3" placeholder="Ingresa aqui el texto que deseas cifrar o descifrar" required></textarea>
                     </div>
                     <div class="mb-2">
                         <label for="claveCifrado" class="form-label claveCifrado">Clave del Cifrado</label>
-                        <input class="form-control" type="text" name="claveCifrado" id="claveCifrado" required>
+                        <input class="form-control" type="text" name="claveCifrado" id="claveCifrado" placeholder="La usaras para buscar los mensajes">
                     </div>
                     <div class="mb-2">
                         <input type="radio" class="btn-check" name="tipoCifrado" id="Atbash" value="Atbash" autocomplete="off" checked>
@@ -73,10 +73,11 @@
                     <div class="col-12 col-md-6">
                         <div class="mb-2">
                             <label for="mensajeProcesado" class="form-label">Mensajes procesados</label>
-                            <textarea class="form-control justify-content-center align-items-center" id="mensajeProcesado" name="mensajeProcesado" rows="6">....Aqui se podra leer el mensaje ya procesado....</textarea>
+                            <textarea class="form-control justify-content-center align-items-center" id="mensajeProcesado" name="mensajeProcesado" rows="6"placeholder="....Aqui se podra leer el mensaje ya procesado...."></textarea>
                         </div>
                         <div class="btn-group" role="group" aria-label="Default button group">
                             <button type="submit" id="guardar" class="btn btn-success">Guardar</button>
+                            <button type="button" id="copiar" class="btn btn-success">Copiar</button>
                         </div> 
                     </div>
                 </form>

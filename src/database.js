@@ -3,21 +3,27 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 // Esquema de usuario
 const Usuario = require('./models/model.user');
 // Esquema de mensaje
 const Mensaje = require('./models/model.mensajes');
 
-const app = express();
+
 const puerto = process.env.PORT || 3000;
+const MONGO_CONECCT = process.env.MONGO_CONECCT;
+
+const app = express();
 
 // Transformar el texto en JSON
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
 // Conexión a la base de datos
-mongoose.connect('mongodb+srv://nayluclash:root@cluster0.qtiyc2v.mongodb.net/enigmaDB')
+mongoose.connect(MONGO_CONECCT)
     .then(() => {
         console.log('Conexión exitosa a MongoDB');
     })

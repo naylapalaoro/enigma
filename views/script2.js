@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const descifrarBoton = document.getElementById("descifrar");
     const borrarBoton = document.getElementById("cancelar");
     const guardarBoton = document.getElementById("guardar");
+    const copiarBoton = document.getElementById("copiar");
 
     const cifrarMensaje = (event) => {
         event.preventDefault();
@@ -52,6 +53,26 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     cifrarBoton.addEventListener("click", cifrarMensaje);
+
+    const copiarSinGuardar = (event) =>{
+        event.preventDefault();
+        const mensaje= document.getElementById("mensajeProcesado").value;
+        const tipoCifrado = document.querySelector('input[name="tipoCifrado"]:checked').value;
+        const clave = document.getElementById("claveCifrado").value.trim();
+
+        const texto = `${clave}\n${tipoCifrado}\n${mensaje}`;
+    
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    
+        alert('Mensaje copiado al portapapeles');
+    };
+    
+    copiarBoton.addEventListener("click", copiarSinGuardar);
 
     borrarBoton.addEventListener("click", () => {
         document.getElementById("mensajeSinProcesar").value = "";
