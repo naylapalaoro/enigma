@@ -52,8 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("mensajeProcesado").textContent = mensajeCifrado;
     };
 
-    cifrarBoton.addEventListener("click", cifrarMensaje);
-
     const copiarSinGuardar = (event) =>{
         event.preventDefault();
         const mensaje= document.getElementById("mensajeProcesado").value;
@@ -71,8 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
         alert('Mensaje copiado al portapapeles');
     };
-    
-    copiarBoton.addEventListener("click", copiarSinGuardar);
 
     borrarBoton.addEventListener("click", () => {
         document.getElementById("mensajeSinProcesar").value = "";
@@ -126,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("mensajeProcesado").textContent = mensajeDescifrado;
     };
 
-    descifrarBoton.addEventListener("click", descifrarMensaje);
+    
 
     const borrarCampos = () => {
         document.getElementById("mensajeSinProcesar").value = "";
@@ -136,31 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const guardarMensaje = async (event) => {
         event.preventDefault();
-
-        const formData = new FormData(mensajeForm);
-        const data = {
-            mensajeInicial: formData.get("mensajeInicial"),
-            claveCifrado: formData.get("claveCifrado"),
-            mensajeProcesado: formData.get("mensajeProcesado")
-        };
-
-        try {
-            const response = await fetch('/home', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
                 // Actualiza la tabla dinámicamente
-                const clave = data.claveCifrado;
-                const mensaje = data.mensajeProcesado;
+                const mensaje= document.getElementById("mensajeProcesado").value;
                 const tipoCifrado = document.querySelector('input[name="tipoCifrado"]:checked').value;
+                const clave = document.getElementById("claveCifrado").value.trim();
                 const tabla = document.getElementById("mensajesPrevios").getElementsByTagName('tbody')[0];
-                const fecha = new Date();
-                const fechaFormateada = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 
                 const botonesBDBorrar = `<button type="button" class="btn btn-danger m-1">
                                             <i class="bi bi-trash3-fill" style="color:black"></i>
@@ -174,41 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 let celda2 = fila.insertCell(1);
                 let celda3 = fila.insertCell(2);
                 let celda4 = fila.insertCell(3);
-                let celda5 = fila.insertCell(4);
 
                 celda1.innerHTML = clave;
                 celda2.innerHTML = tipoCifrado;
                 celda3.innerHTML = mensaje;
-                celda4.innerHTML = fechaFormateada;
-                celda5.innerHTML = botonesBDBorrar + botonesCopiar;
+                celda4.innerHTML = botonesBDBorrar + botonesCopiar;
 
                 borrarCampos();
-            } else {
-                console.error('Error al guardar el mensaje');
-            }
-        } catch (error) {
-            console.error('Error al guardar el mensaje:', error);
-        }
-    };
+            };
     const borrarMensaje = async (clave, mensaje, fila) => {
-        try {
-            const response = await fetch('/home', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ mensajeProcesado: mensaje, claveCifrado: clave })
-            });
-
-            if (response.ok) {
                 fila.remove();
-            } else {
-                console.error('Error al borrar el mensaje');
-            }
-        } catch (error) {
-            console.error('Error al borrar el mensaje:', error);
-        }
-    };
+            };
     const copiarMensaje = (button) => {
         const fila = button.closest('tr');
         const clave = fila.cells[0].innerText;
@@ -226,8 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert('Mensaje copiado al portapapeles');
     };
 
-    document.getElementById('guardar').addEventListener('click', guardarMensaje);
-
     document.getElementById('mensajesPrevios').addEventListener('click', (event) => {
         if (event.target.closest('.btn-danger')) {
             const fila = event.target.closest('tr');
@@ -242,11 +192,12 @@ document.addEventListener("DOMContentLoaded", () => {
             copiarMensaje(event.target.closest('.btn-primary'));
         }
     });
-    
+
 
     cifrarBoton.addEventListener("click", cifrarMensaje);
     descifrarBoton.addEventListener("click", descifrarMensaje);
     borrarBoton.addEventListener("click", borrarCampos);
     guardarBoton.addEventListener("click", guardarMensaje);
+    copiarBoton.addEventListener("click", copiarSinGuardar);
 
 });

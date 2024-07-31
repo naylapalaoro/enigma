@@ -132,65 +132,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Método para guardar mensaje
-app.post('/home', async (req, res) => {
-    const newMensaje = new Mensaje({
-        mensajeInicial: req.body.mensajeInicial,
-        claveCifrado: req.body.claveCifrado,
-        mensajeProcesado: req.body.mensajeProcesado
-    });
-
-    try {
-        const savedMensaje = await newMensaje.save();
-        console.log('Mensaje guardado:', savedMensaje);
-        res.status(200).json(savedMensaje);
-    } catch (err) {
-        console.error('Error al guardar el mensaje:', err);
-        res.status(500).json({ error: 'Error al guardar el mensaje' });
-    }
-});
-
-// Método para borrar mensaje
-app.delete('/home', async (req, res) => {
-    console.log('Datos recibidos para eliminación:', req.body);
-    const { mensajeProcesado, claveCifrado } = req.body;
-
-    try {
-        const mensajeEliminado = await Mensaje.findOneAndDelete({ mensajeProcesado, claveCifrado });
-
-        if (!mensajeEliminado) {
-            return res.status(404).json({ error: 'Mensaje no encontrado' });
-        }
-
-        console.log(`Mensaje con contenido "${mensajeProcesado}" y clave "${claveCifrado}" eliminado`);
-        res.status(200).json({ message: 'Mensaje eliminado' });
-    } catch (err) {
-        console.error('Error al eliminar el mensaje:', err);
-        res.status(500).json({ error: 'Error al eliminar el mensaje' });
-    }
-});
-
-//metodo para visualizar mensajes
-app.get('/mensajes', async (req, res) => {
-    const claveCifrado = req.body;
-
-    try {
-        const mensajesPrevios = await Mensaje.find(claveCifrado);
-        
-        if(!mensajesPrevios){
-            res.status(404).json({ message: 'No se encuentran mensajes cifrados con esa clave' });
-        }
-
-        console.log(`Mensajes encontrados con la clave "${claveCifrado}"`);
-        res.status(200).json({ message: 'Mensajes encontrados con esa clave:' });
-
-    }catch (err) {
-        console.error('Error al buscar mensajes con esa clave', err);
-        res.status(500).json({ error: 'Error al buscar mensajes con esa clave' });
-    }
-    
-});
-
 // Escuchar en el puerto 3000
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en http://localhost:3000`);
