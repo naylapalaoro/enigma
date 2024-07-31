@@ -7,9 +7,6 @@ require('dotenv').config();
 
 // Esquema de usuario
 const Usuario = require('./models/model.user');
-// Esquema de mensaje
-const Mensaje = require('./models/model.mensajes');
-
 
 const puerto = process.env.PORT || 3000;
 const MONGO_CONECCT = process.env.MONGO_CONECCT;
