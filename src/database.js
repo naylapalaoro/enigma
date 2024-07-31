@@ -64,13 +64,6 @@ app.get("/errorLogeo", (req, res) => {
         console.error(e);
     }
 });
-app.get("/mensajes", (req, res) => {
-    try{
-        res.sendFile(path.resolve(__dirname, '../views/mensajes.html'));
-    }catch (e) {
-        console.error(e);
-    }
-});
 app.get("/mailExistente", (req, res) => {
     try{
         res.sendFile(path.resolve(__dirname, '../views/mailExistente.html'));
