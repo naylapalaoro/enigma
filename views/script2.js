@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const guardarBoton = document.getElementById("guardar");
     const copiarBoton = document.getElementById("copiar");
 
+    document.getElementById('copiarLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('URL copiada al portapapeles: ' + window.location.href + ' ya puedes compartir la app con tus contactos, gracias.');
+        }).catch(function(err) {
+            console.error('no se pudo copiar, por favor comunicate con nosotros: ', err);
+        });
+    });
+
     const cifrarMensaje = (event) => {
         event.preventDefault();
 

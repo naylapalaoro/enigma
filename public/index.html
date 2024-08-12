@@ -37,7 +37,7 @@
                     <a class="nav-link" style="font-size: 20px;" aria-current="page" href="/contactanos">Contactanos</a>
                   </li>
                   <li class="nav-item" style="font-size: 20px;">
-                    <a class="nav-link" style="font-weight: bold" href="#">Comparti</a>
+                    <a class="nav-link" style="font-weight: bold" id="copiarLink" href="#">Comparti</a>
                   </li>
                 </ul>
               </div>
@@ -85,5 +85,16 @@
             </div>
         </section>
     </div>
+    <script>
+            document.getElementById('copiarLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            alert('URL copiada al portapapeles: ' + window.location.href + ' ya puedes compartir la app con tus contactos, gracias.');
+        }).catch(function(err) {
+            console.error('no se pudo copiar, por favor comunicate con nosotros: ', err);
+        });
+    });
+
+    </script>
 </body>
 </html>
