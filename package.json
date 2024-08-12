@@ -2,7 +2,7 @@
   "name": "enigma",
   "version": "1.0.0",
   "description": "",
-  "main": "database.js",
+  "main": "src/database.js",
   "scripts": {
     "start": "node src/database.js",
     "dev": "nodemon src/database.js"

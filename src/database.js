@@ -1,3 +1,4 @@
+// mail.profePractica vpp.teclab.gg@gmail.com
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -64,6 +65,13 @@ app.get("/errorLogeo", (req, res) => {
 app.get("/mailExistente", (req, res) => {
     try{
         res.sendFile(path.resolve(__dirname, '../views/mailExistente.html'));
+    }catch (e) {
+        console.log(e);
+    }
+});
+app.get("/contactanos", (req, res) => {
+    try{
+        res.sendFile(path.resolve(__dirname, '../views/contactanos.html'));
     }catch (e) {
         console.log(e);
     }
