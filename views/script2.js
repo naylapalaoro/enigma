@@ -5,10 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const guardarBoton = document.getElementById("guardar");
     const copiarBoton = document.getElementById("copiar");
 
-    document.getElementById('copiarLink').addEventListener('click', function(event) {
-        event.preventDefault();
-        navigator.clipboard.writeText(window.location.href).then(function() {
-            alert('URL copiada al portapapeles: ' + window.location.href + ' ya puedes compartir la app con tus contactos, gracias.');
+    document.getElementById('copiarLink').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const link = "https://enigma-o4tx.onrender.com"
+        navigator.clipboard.writeText(link).then(function() {
+            alert('URL copiada al portapapeles: ' + link + ' ya puedes compartir la app con tus contactos, gracias.');
         }).catch(function(err) {
             console.error('no se pudo copiar, por favor comunicate con nosotros: ', err);
         });
