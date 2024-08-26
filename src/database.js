@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const twilio = require('twilio');
 require('dotenv').config();
 
 // Esquema de usuario
@@ -28,6 +30,11 @@ mongoose.connect(MONGO_CONECCT)
     .catch((error) => {
         console.error('Error al conectar a MongoDB:', error);
     });
+
+// Conexcion a twilio
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../public')));
@@ -76,11 +83,26 @@ app.get("/contactanos", (req, res) => {
         console.log(e);
     }
 });
+app.get("/solicitarCodigo", (req, res) => {
+    try{
+        res.sendFile(path.resolve(__dirname, '../views/solicitar-codigo.html'));
+    }catch (e) {
+        console.log(e);
+    }
+});
+app.get("/validarCodigo", (req, res) => {
+    try{
+        res.sendFile(path.resolve(__dirname, '../views/validar-codigo.html'));
+    }catch (e) {
+        console.log(e);
+    }
+});
+
 // Metodos para guardar usuarios
 app.post('/', async (req, res) => {
     console.log('Datos recibidos:', req.body);
 
-    const { nombre, apellido, email, contraseña } = req.body;
+    const { nombre, apellido, telefono, email, contraseña } = req.body;
 
     try {
             const usuarioLogeado = await Usuario.findOne({ email });
@@ -90,6 +112,7 @@ app.post('/', async (req, res) => {
             const newUsuario = new Usuario({
                 nombre,
                 apellido,
+                telefono, 
                 email,
                 contraseña: hashedPassword
             });
@@ -129,6 +152,64 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Error al intentar iniciar sesión');
     }
 });
+
+//Solicitar un codigo
+app.post('/solicitarCodigo', async (req, res) => {
+    const { telefono, email } = req.body;
+    const codigo = Math.floor(100000 + Math.random() * 900000);
+
+    try {
+        await client.messages.create({
+            body: `Tu código de verificación es: ${codigo}`,
+            from: `+15132015161`,
+            to: `${telefono}`
+        })
+        .then(message => console.log(message.sid));
+
+        // Actualizar el código de recuperación en MongoDB
+        const usuario = await Usuario.findOneAndUpdate(
+            { telefono, email },
+            { codigo_recuperacion: codigo },
+            { new: true, upsert: true } 
+        );
+
+        console.log('codigo enviado')
+        res.redirect('/validar-codigo');
+    } catch (error) {
+        res.status(500).send('Error al enviar el código.');
+        console.log(error);
+    }
+});
+
+//verificar el codigo de recuperacion
+app.post('/verificar-codigo', async (req, res) => {
+    const { telefono, codigoIngresado, nuevaContraseña } = req.body;
+        try {
+            const usuario = await Usuario.findOne({ telefono });
+    
+            if (!usuario) {
+                return res.status(404).json({ message: 'Usuario no encontrado.' });
+            }
+    
+            if (usuario.codigo_recuperacion !== codigoIngresado) {
+                return res.status(400).json({ message: 'Código incorrecto.' });
+            }
+    
+            const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+    
+            usuario.contrasena = hashedPassword;
+            await usuario.save();
+    
+            res.status(200).json();
+            res.redirect('/home');
+        } catch (error) {
+            res.status(500).json({ message: 'Error al actualizar la contraseña.' });
+        }
+    });
+
+
+
+
 
 // Escuchar en el puerto 3000
 app.listen(puerto, () => {

@@ -13,9 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script defer src="/views/script2.js"></script>
+    <script defer src="script2.js"></script>
 </head>
-<body>
+<body style="background-color: black;">
     <div class="container-fluid text-center text-bg-dark p-3">
         <div class="row">
             <div class="col-sm-9 col-md-8 text-center d-flex justify-content-center align-items-center">
@@ -46,27 +46,55 @@
     
         <section class="p-3 mb-2 bg-black text-success text-center d-flex justify-content-center align-items-center">
             <div class="justify-content-center align-items-center">
-                <div class="p-15">
-                    <h1>Iniciar sesion</h1>
-                </div>
                 <div class="p-3 mb-2 bg-black text-success text-center d-flex justify-content-center align-items-center" >
-                    <form action="/login" method="post" id="formularioLogin">
+                    <form action="/validarCodigo" method="post" id="recuperarForm">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <h2>Recuperar contraseña</h2>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Telefono</label>
+                            <input type ="text" class="form-control" id="telefono" name="telefono" required>
                         </div>
                         <div class="mb-3">
-                            <label for="contraseña" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                            <label for="codigo" class="form-label">Codigo de verificacion</label>
+                            <input type="text" class="form-control" id="codigo" name="codigo" required>
                         </div>
-                        <button type="submit" class="btn btn-success" id="iniciar">Iniciar sesión</button>
+                        <div class="mb-3">
+                            <label for="contraseña" class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="nuevaContrasena" name="nuevaContraseña" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Validar codigo</button>
                     </form>
-                </div>
-                <div>
-                    <a href="/solicitarCodigo">¿Olvidaste tu contraseña?</a>
                 </div>
             </div>
         </section>
     </div>
+
+    <script>
+        document.getElementById('recuperarForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const telefono = document.getElementById('telefono').value;
+            const codigo = document.getElementById('codigo').value;
+            const nuevaContrasena = document.getElementById('nuevaContrasena').value;
+
+            const response = await fetch('/verificar-codigo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ telefono, codigo, nuevaContrasena })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Contraseña cambiada con éxito.');
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        });
+    </script>
 </body>
 </html>
