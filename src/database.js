@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const twilio = require('twilio');
+const fetch = require('node-fetch');
 require('dotenv').config();
 
 // Esquema de usuario
@@ -31,10 +30,6 @@ mongoose.connect(MONGO_CONECCT)
         console.error('Error al conectar a MongoDB:', error);
     });
 
-// Conexcion a twilio
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
-const client = twilio(accountSid, authToken);
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../public')));
@@ -158,32 +153,52 @@ app.post('/solicitarCodigo', async (req, res) => {
     const { telefono, email } = req.body;
     const codigo = Math.floor(100000 + Math.random() * 900000);
 
-    try {
-        await client.messages.create({
-            body: `Tu código de verificación es: ${codigo}`,
-            from: `+15132015161`,
-            to: `${telefono}`
-        })
-        .then(message => console.log(message.sid));
 
-        // Actualizar el código de recuperación en MongoDB
+    try{
+        const response = await fetch('https://api.httpsms.com/v1/messages/send', {
+            method: 'POST',
+            headers: {
+                'x-api-key': process.env.API_kEY,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "content": "tu codigo de recuperacion es, " + codigo + ".",
+                "from": "+542215900920",
+                "to": telefono
+            })
+        });
+
+        const data = await response.json();
+        console.log('Respuesta de la API:', data);
+
+    // Actualizar el código de recuperación en MongoDB
+    if (response.ok) {
         const usuario = await Usuario.findOneAndUpdate(
             { telefono, email },
             { codigo_recuperacion: codigo },
-            { new: true, upsert: true } 
+            { new: true }
         );
 
-        console.log('codigo enviado')
-        res.redirect('/validar-codigo');
-    } catch (error) {
+        if (usuario) {
+            console.log('Código enviado y usuario actualizado');
+            res.redirect('/validarCodigo');
+        } else {
+            console.log('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
+        }
+    } else {
         res.status(500).send('Error al enviar el código.');
-        console.log(error);
     }
+} catch (error) {
+    res.status(500).send('Error al enviar el código.');
+    console.log(error);
+}
 });
 
 //verificar el codigo de recuperacion
-app.post('/verificar-codigo', async (req, res) => {
-    const { telefono, codigoIngresado, nuevaContraseña } = req.body;
+app.post('/verificarCodigo', async (req, res) => {
+    const { telefono, codigo, nuevaContraseña } = req.body;
         try {
             const usuario = await Usuario.findOne({ telefono });
     
@@ -191,18 +206,19 @@ app.post('/verificar-codigo', async (req, res) => {
                 return res.status(404).json({ message: 'Usuario no encontrado.' });
             }
     
-            if (usuario.codigo_recuperacion !== codigoIngresado) {
-                return res.status(400).json({ message: 'Código incorrecto.' });
+            if (usuario.codigo_recuperacion !== codigo) {
+                return res.status(400).json({ message: 'Código incorrecto de verificacion.' });
             }
     
-            const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+            const hashedPassword = await bcrypt.hash(nuevaContraseña, 10);
     
-            usuario.contrasena = hashedPassword;
+            usuario.contraseña = hashedPassword;
             await usuario.save();
     
-            res.status(200).json();
-            res.redirect('/home');
+            res.status(200).json({ message: 'Contraseña modificada con exito, disfruta de tu applicacion' });
+
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Error al actualizar la contraseña.' });
         }
     });

@@ -62,7 +62,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="contraseña" class="form-label">Nueva contraseña</label>
-                            <input type="password" class="form-control" id="nuevaContrasena" name="nuevaContraseña" required>
+                            <input type="password" class="form-control" id="nuevaContraseña" name="nuevaContraseña" required>
                         </div>
 
                         <button type="submit" class="btn btn-success">Validar codigo</button>
@@ -78,19 +78,20 @@
             
             const telefono = document.getElementById('telefono').value;
             const codigo = document.getElementById('codigo').value;
-            const nuevaContrasena = document.getElementById('nuevaContrasena').value;
+            const nuevaContraseña = document.getElementById('nuevaContraseña').value;
 
-            const response = await fetch('/verificar-codigo', {
+            const response = await fetch('/verificarCodigo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ telefono, codigo, nuevaContrasena })
+                body: JSON.stringify({ telefono, codigo, nuevaContraseña })
             });
 
             const data = await response.json();
             if (response.ok) {
                 alert('Contraseña cambiada con éxito.');
+                window.location.href = '/home';
             } else {
                 alert(`Error: ${data.message}`);
             }
