@@ -13,6 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!--Seewt Alert-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body>
@@ -95,9 +97,15 @@
 
                 const link = "https://enigma-o4tx.onrender.com"
                 navigator.clipboard.writeText(link).then(function() {
-                    alert('URL copiada al portapapeles: ' + link + ' ya puedes compartir la app con tus contactos, gracias.');
+                    
+                    Swal.fire({
+                        title: 'URL copiada al portapapeles: ',
+                        text: 'Ya puedes compartir la app con tus contactos, gracias.',
+                        icon: 'success',
+                        confirmButtonText: 'Ok'
+                    });
                 }).catch(function(err) {
-                    console.error('no se pudo copiar, por favor comunicate con nosotros: ', err);
+                    console.error('no se pudo copiar', err);
                 });
             });
 

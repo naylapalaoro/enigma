@@ -10,9 +10,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const link = "https://enigma-o4tx.onrender.com"
         navigator.clipboard.writeText(link).then(function() {
-            alert('URL copiada al portapapeles: ' + link + ' ya puedes compartir la app con tus contactos, gracias.');
+            Swal.fire({
+                title: 'URL copiada al portapapeles: ',
+                text: 'Ya puedes compartir la app con tus contactos, gracias.',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
         }).catch(function(err) {
-            console.error('no se pudo copiar, por favor comunicate con nosotros: ', err);
+            Swal.fire({
+                title: 'Houston tenemos un problema',
+                text: `Nose pudo copiar el link: ${err.message}`,
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
         });
     });
 
@@ -77,8 +87,13 @@ document.addEventListener("DOMContentLoaded", () => {
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-    
-        alert('Mensaje copiado al portapapeles');
+        
+        Swal.fire({
+            title: 'Mensaje copiado en el portapapeles.',
+            text: 'Gracias por elegirnos.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
     };
 
     borrarBoton.addEventListener("click", () => {
@@ -143,7 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const guardarMensaje = async (event) => {
         event.preventDefault();
-                // Actualiza la tabla dinámicamente
                 const mensaje= document.getElementById("mensajeProcesado").value;
                 const tipoCifrado = document.querySelector('input[name="tipoCifrado"]:checked').value;
                 const clave = document.getElementById("claveCifrado").value.trim();
@@ -185,8 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-    
-        alert('Mensaje copiado al portapapeles');
+        
+        Swal.fire({
+            title: 'Mensaje copiado en el portapapeles.',
+            text: 'Gracias por elegirnos.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
     };
 
     document.getElementById('mensajesPrevios').addEventListener('click', (event) => {
