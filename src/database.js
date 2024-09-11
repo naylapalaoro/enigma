@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
+
+
 require('dotenv').config();
 
 // Esquema de usuario
@@ -130,15 +132,16 @@ app.post('/login', async (req, res) => {
     const { email, contraseña } = req.body;
 
     try {
-        const usuario = await Usuario.findOne({ email });
+        let usuario = await Usuario.findOne({ email });
 
-        if (usuario) {
-            const isMatch = await bcrypt.compare(contraseña, usuario.contraseña);
-            if (isMatch) {
-                res.redirect('/home');
-            } else {
-                res.redirect('/errorLogeo');
-            }
+        if (!usuario) {
+            return res.redirect('/errorLogeo');
+        }
+
+        const isMatch = await bcrypt.compare(contraseña, usuario.contraseña);
+
+        if (isMatch) {
+            res.redirect('/home');
         } else {
             res.redirect('/errorLogeo');
         }
