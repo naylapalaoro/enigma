@@ -34,8 +34,8 @@ mongoose.connect(MONGO_CONECCT)
 
 
 // Servir archivos estáticos
-app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.static(path.join(__dirname, '../views')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Rutas para servir páginas HTML
 app.get("/", (req, res) => {
@@ -52,48 +52,7 @@ app.get("/home", (req, res) => {
         console.error(e);
     }
 });
-app.get("/login", (req, res) => {
-    try {
-        res.sendFile(path.resolve(__dirname, '../views/login.html'));
-    } catch (e) {
-        console.error(e);
-    }
-});
-app.get("/errorLogeo", (req, res) => {
-    try {
-        res.sendFile(path.resolve(__dirname, '../views/errorLogeo.html'));
-    } catch (e) {
-        console.error(e);
-    }
-});
-app.get("/mailExistente", (req, res) => {
-    try{
-        res.sendFile(path.resolve(__dirname, '../views/mailExistente.html'));
-    }catch (e) {
-        console.log(e);
-    }
-});
-app.get("/contactanos", (req, res) => {
-    try{
-        res.sendFile(path.resolve(__dirname, '../views/contactanos.html'));
-    }catch (e) {
-        console.log(e);
-    }
-});
-app.get("/solicitarCodigo", (req, res) => {
-    try{
-        res.sendFile(path.resolve(__dirname, '../views/solicitar-codigo.html'));
-    }catch (e) {
-        console.log(e);
-    }
-});
-app.get("/validarCodigo", (req, res) => {
-    try{
-        res.sendFile(path.resolve(__dirname, '../views/validar-codigo.html'));
-    }catch (e) {
-        console.log(e);
-    }
-});
+
 
 // Metodos para guardar usuarios
 app.post('/', async (req, res) => {
@@ -116,14 +75,14 @@ app.post('/', async (req, res) => {
 
             const savedUsuario = await newUsuario.save();
             console.log('Usuario guardado:', savedUsuario);
-            res.redirect('/home');
+            res.status(200).json({ message : 'usuario guardado exitosamente' });
         } else{
             console.log('El mail de usuario ya existe')
-            res.redirect('/mailExistente');
+            res.status(401).json({ message : 'el mail ingresado ya existe' });
         }
     }catch (err) {
         console.error('Error al guardar el usuario:', err);
-        res.status(500).send('Error al guardar el usuario');
+        res.status(500).json({ message : 'Error al guardar el usuario' });
     }
 });
 
@@ -135,19 +94,19 @@ app.post('/login', async (req, res) => {
         let usuario = await Usuario.findOne({ email });
 
         if (!usuario) {
-            return res.redirect('/errorLogeo');
+            return res.status(404).json({ message :'Usuario no encontrado' });
         }
 
         const isMatch = await bcrypt.compare(contraseña, usuario.contraseña);
 
         if (isMatch) {
-            res.redirect('/home');
+            res.status(200).json({ message: 'bienvenido de nuevo' });
         } else {
-            res.redirect('/errorLogeo');
+            res.status(401).json({ message :'Contraseña invalida' });
         }
     } catch (error) {
         console.error('Error al intentar iniciar sesión:', error);
-        res.status(500).send('Error al intentar iniciar sesión');
+        res.status(500).json({ message : 'Error al intentar iniciar sesión' });
     }
 });
 
@@ -155,7 +114,6 @@ app.post('/login', async (req, res) => {
 app.post('/solicitarCodigo', async (req, res) => {
     const { telefono, email } = req.body;
     const codigo = Math.floor(100000 + Math.random() * 900000);
-
 
     try{
         const response = await fetch('https://api.httpsms.com/v1/messages/send', {
@@ -185,16 +143,16 @@ app.post('/solicitarCodigo', async (req, res) => {
 
         if (usuario) {
             console.log('Código enviado y usuario actualizado');
-            res.redirect('/validarCodigo');
+            res.status(200).json({ message : 'Codigo enviado, por favor revisa tu mensaje' });
         } else {
             console.log('Usuario no encontrado');
-            res.status(404).send('Usuario no encontrado');
+            res.status(404).json({ message :'Usuario no encontrado' });
         }
     } else {
-        res.status(500).send('Error al enviar el código.');
+        res.status(500).json({ message :'Error al enviar el código.' });
     }
 } catch (error) {
-    res.status(500).send('Error al enviar el código.');
+    res.status(500).json({ message :'Error al enviar el código.' });
     console.log(error);
 }
 });
