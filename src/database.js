@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
+const session = require('express-session');
 
 
 require('dotenv').config();
@@ -21,8 +22,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
 // Conexión a la base de datos
 mongoose.connect(MONGO_CONECCT)
     .then(() => {
@@ -32,25 +31,53 @@ mongoose.connect(MONGO_CONECCT)
         console.error('Error al conectar a MongoDB:', error);
     });
 
-
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../views')));
 app.use(express.static(path.join(__dirname, '../public')));
 
+//sesion para manejar a los usuarios
+app.use(session({
+    secret: 'habiaUnaVezUnaVacaEnLaQuebradaDeHumahuaca', 
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } 
+}));
+
+// Proteje home de accesos no loggeados
+const verificarAuentificacion = (req, res, next) =>{
+    if (req.session.userId){
+        console.log("usuario conectado");
+        return next();
+    }else{
+        res.redirect("/");
+    }
+};
+
 // Rutas para servir páginas HTML
-app.get("/", (req, res) => {
+app.get("/",  (req, res) => {
     try {
         res.sendFile(path.resolve(__dirname, '../public/index.html'));
     } catch (e) {
         console.error(e);
     }
 });
-app.get("/home", (req, res) => {
+app.get("/home", verificarAuentificacion, (req, res) => {
     try {
         res.sendFile(path.resolve(__dirname, '../views/home.html'));
     } catch (e) {
         console.error(e);
     }
+});
+
+//Cerrar la sesion
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error al cerrar sesión:', err);
+        }
+        console.log("usuario desconectado");
+        res.redirect('/');
+    });
 });
 
 
@@ -100,6 +127,7 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(contraseña, usuario.contraseña);
 
         if (isMatch) {
+            req.session.userId = usuario._id;
             res.status(200).json({ message: 'bienvenido de nuevo' });
         } else {
             res.status(401).json({ message :'Contraseña invalida' });
