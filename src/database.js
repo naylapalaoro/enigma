@@ -142,6 +142,8 @@ app.post('/login', async (req, res) => {
 app.post('/solicitarCodigo', async (req, res) => {
     const { telefono, email } = req.body;
     const codigo = Math.floor(100000 + Math.random() * 900000);
+    const telefonoTrim = telefono.replace(/\s+/g, '').trim();
+    const emailTrim = email.toLowerCase().trim();
 
     try{
         const response = await fetch('https://api.httpsms.com/v1/messages/send', {
@@ -154,7 +156,7 @@ app.post('/solicitarCodigo', async (req, res) => {
             body: JSON.stringify({
                 "content": "tu codigo de recuperacion es, " + codigo + ".",
                 "from": "+542215900920",
-                "to": telefono
+                "to": telefonoTrim
             })
         });
 
@@ -163,8 +165,9 @@ app.post('/solicitarCodigo', async (req, res) => {
 
     // Actualizar el código de recuperación en MongoDB
     if (response.ok) {
+        
         const usuario = await Usuario.findOneAndUpdate(
-            { telefono, email },
+            { telefono:telefonoTrim, email:emailTrim },
             { codigo_recuperacion: codigo },
             { new: true }
         );
@@ -211,8 +214,6 @@ app.post('/verificarCodigo', async (req, res) => {
             res.status(500).json({ message: 'Error al actualizar la contraseña.' });
         }
     });
-
-
 
 
 
