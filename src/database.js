@@ -36,8 +36,10 @@ app.use(express.static(path.join(__dirname, '../views')));
 app.use(express.static(path.join(__dirname, '../public')));
 
 //sesion para manejar a los usuarios
+const SECRET = process.env.SECRET_KEY;
+
 app.use(session({
-    secret: 'habiaUnaVezUnaVacaEnLaQuebradaDeHumahuaca', 
+    secret: SECRET, 
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false } 
